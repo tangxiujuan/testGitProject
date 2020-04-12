@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app1">{{data}}</div>
+    <div id="app2">{{data}}</div>
+    <div id="app3">
+        <button @click="handleChange">change</button>
+    </div>
+    <script>
+        function registerPlugin(Vue){
+            let vuex={}
+            vuex._vm=new Vue({
+                data:{
+                    message:'hello vue.js'
+                }
+            })
+            vuex.state = vuex._vm
+            vuex.mutations = {
+                setMessage(value){
+                    vuex.state.message = value
+                }
+            }
+            function init(){
+                this.$store = vuex
+            }
+            Vue.mixin({
+                beforeCreate:init
+            })
+        }
+        Vue.use(registerPlugin)
+        new Vue({
+            el:'#app1',
+            computed: {
+                data(){
+                    return this.$store.state.message
+                }
+            },
+        })
+        new Vue({
+            el:'#app2',
+            computed:{
+                data(){
+                    return this.$store.state.message
+                }
+            }
+        })
+        new Vue({
+            el:'#app3',
+           methods: {
+                handleChange(){
+                    this.$store.mutations.setMessage(this.$store.state.message + '...')
+                }
+           },
+        })
+    </script>
+</body>
+</html>
